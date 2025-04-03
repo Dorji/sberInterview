@@ -1,6 +1,6 @@
 syntax = "proto3";
-package loan;
-option go_package = "example.com/api/protos/entities/loan";
+package entities;
+option go_package = "github.com/Dorji/sberInterview/api/protos/entities";
 
 import "google/protobuf/timestamp.proto";  // Для даты
 

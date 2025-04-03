@@ -1,16 +1,17 @@
 syntax = "proto3";
-package loan_list;
-option go_package = "example.com/api/protos/services/loan_list";
+package services;
+option go_package = "github.com/Dorji/sberInterview/api/protos/services";
 
-import "google/protobuf/empty.proto";  
-import "google/protobuf/timestamp.proto";  
-import "api/protos/entities/loan/loan.proto";
 import "google/api/annotations.proto";
+import "google/protobuf/empty.proto";  
+// import "google/protobuf/timestamp.proto";  
+
+import "api/protos/entities/loan.proto";
 
 
 service LoanService {
   // Пример gRPC-метода с HTTP-ручкой (POST /execute)
-  rpc Execute (loan.LoanRequest) returns (loan.LoanResult) {
+  rpc Execute (entities.LoanRequest) returns (entities.LoanResult) {
     option (google.api.http) = {
       post: "/execute"  // HTTP-метод и путь
       body: "*"          // Тело запроса (всё сообщение)
@@ -18,7 +19,7 @@ service LoanService {
   }
 
   // GET /cache
-  rpc Cache (google.protobuf.Empty) returns (loan.CacheResult) {
+  rpc Cache (google.protobuf.Empty) returns (entities.CacheResult) {
     option (google.api.http) = {
       get: "/cache" 
     };
