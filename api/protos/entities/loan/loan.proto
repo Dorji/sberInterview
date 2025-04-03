@@ -1,0 +1,53 @@
+syntax = "proto3";
+package loan;
+option go_package = "example.com/api/protos/entities/loan";
+
+import "google/protobuf/timestamp.proto";  // Для даты
+
+
+message LoanRequest {
+    int32 object_cost = 1;       // стоимость объекта 
+    int32 initial_payment = 2;   // первоначальный взнос
+    int32 months = 3;            // срок 
+    LoanProgram program = 4;     // блок программы кредита
+}
+
+// Блок параметров кредита
+message LoanParams {
+  int32 object_cost = 1;      // стоимость объекта (рубли)
+  int32 initial_payment = 2;  // первоначальный взнос
+  int32 months = 3;           // срок (месяцы)
+}
+
+// Блок программы кредита
+message LoanProgram {
+  bool salary = 1;    // корпоративная программа
+  bool military = 2;  // военная ипотека
+  bool base = 3;      // базовая программа
+}
+
+// Блок агрегированных данных
+message LoanAggregates {
+  double rate = 1;                          // ставка (% годовых)
+  int32 loan_sum = 2;                       // сумма кредита
+  int32 monthly_payment = 3;                // платеж в месяц
+  int32 overpayment = 4;                    // переплата
+  google.protobuf.Timestamp last_payment_date = 5;  // дата последнего платежа
+}
+
+// Итоговый ответ
+message LoanResult {
+  LoanParams params = 1;
+  LoanProgram program = 2;
+  LoanAggregates aggregates = 3;
+}
+
+// Обертка для ответа (если нужно)
+message LoanResponse {
+  LoanResult result = 1;
+}
+
+
+message CacheResult {
+  repeated LoanResult results= 1;
+}
