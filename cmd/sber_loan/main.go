@@ -17,46 +17,72 @@ import (
 	"google.golang.org/grpc/credentials/insecure"
 	"google.golang.org/grpc/reflection"
 	"google.golang.org/grpc/status"
+	"gopkg.in/yaml.v3"
 
 	"github.com/Dorji/sberInterview/api/protos/services"
 	"github.com/Dorji/sberInterview/internal/loanservice"
 	"github.com/Dorji/sberInterview/internal/loanservice/storage"
 )
 
-const (
-	httpAddr = ":8080"
-	grpcAddr = ":50051"
-)
+// Config represents application configuration
+type Config struct {
+	HTTP struct {
+		Port string `yaml:"port"`
+	} `yaml:"http"`
+	GRPC struct {
+		Port string `yaml:"port"`
+	} `yaml:"grpc"`
+}
+
+func loadConfig(path string) (*Config, error) {
+	config := &Config{
+		HTTP: struct{ Port string }{Port: "8080"},
+		GRPC: struct{ Port string }{Port: "50051"},
+	}
+
+	file, err := os.ReadFile(path)
+	if err != nil {
+		return config, fmt.Errorf("error reading config file: %v, using defaults", err)
+	}
+
+	err = yaml.Unmarshal(file, config)
+	if err != nil {
+		return config, fmt.Errorf("error parsing config file: %v, using defaults", err)
+	}
+
+	return config, nil
+}
 
 // HTTP Middleware
 type responseRecorder struct {
-    http.ResponseWriter
-    statusCode int
+	http.ResponseWriter
+	statusCode int
 }
 
 func (rr *responseRecorder) WriteHeader(statusCode int) {
-    rr.statusCode = statusCode
-    rr.ResponseWriter.WriteHeader(statusCode)
+	rr.statusCode = statusCode
+	rr.ResponseWriter.WriteHeader(statusCode)
 }
 
 func loggingMiddleware(next http.Handler) http.Handler {
-    return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-        start := time.Now()
-        recorder := &responseRecorder{
-            ResponseWriter: w,
-            statusCode:     http.StatusOK, // Значение по умолчанию
-        }
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		start := time.Now()
+		recorder := &responseRecorder{
+			ResponseWriter: w,
+			statusCode:     http.StatusOK,
+		}
 
-        next.ServeHTTP(recorder, r)
+		next.ServeHTTP(recorder, r)
 
-        duration := time.Since(start).Nanoseconds()
-        log.Printf(
-            "%s status_code: %d, duration: %d ns",
-            time.Now().Format("2006/01/02 15:04:05"),
-            recorder.statusCode,
-            duration,
-        )
-    })
+		duration := time.Since(start).Nanoseconds()
+		log.Printf(
+			"%s %s status_code: %d, duration: %d ns",
+			r.Method,
+			r.URL.Path,
+			recorder.statusCode,
+			duration,
+		)
+	})
 }
 
 func recoveryMiddleware(next http.Handler) http.Handler {
@@ -81,7 +107,7 @@ func loggingUnaryInterceptor(ctx context.Context, req interface{}, info *grpc.Un
 	duration := time.Since(start).Nanoseconds()
 	log.Printf(
 		"%s status_code: %d, duration: %d ns",
-		time.Now().Format("2006/01/02 15:04:05"),
+		info.FullMethod,
 		statusCode,
 		duration,
 	)
@@ -92,27 +118,11 @@ func loggingUnaryInterceptor(ctx context.Context, req interface{}, info *grpc.Un
 func recoveryUnaryInterceptor(ctx context.Context, req interface{}, info *grpc.UnaryServerInfo, handler grpc.UnaryHandler) (resp interface{}, err error) {
 	defer func() {
 		if r := recover(); r != nil {
-			log.Printf("%s gRPC panic in %s: %v", 
-				time.Now().Format("2006/01/02 15:04:05"),
-				info.FullMethod, 
-				r)
+			log.Printf("gRPC panic in %s: %v", info.FullMethod, r)
 			err = status.Errorf(codes.Internal, "Internal Server Error")
 		}
 	}()
 	return handler(ctx, req)
-}
-
-// HTTP сервер
-type httpServer struct{}
-
-func (s *httpServer) ServeHTTP(w http.ResponseWriter, r *http.Request) {
-	switch r.URL.Path {
-	case "/health":
-		w.WriteHeader(http.StatusOK)
-		fmt.Fprint(w, "OK")
-	default:
-		http.NotFound(w, r)
-	}
 }
 
 func registerGRPCHandlers(grpcSrv *grpc.Server) {
@@ -126,7 +136,6 @@ func registerGRPCHandlers(grpcSrv *grpc.Server) {
 }
 
 func registerHTTPHandlers(ctx context.Context, mux *runtime.ServeMux) error {
-	// Регистрируем gRPC Gateway endpoints
 	opts := []grpc.DialOption{
 		grpc.WithTransportCredentials(insecure.NewCredentials()),
 	}
@@ -143,11 +152,25 @@ func registerHTTPHandlers(ctx context.Context, mux *runtime.ServeMux) error {
 	return nil
 }
 
+var (
+	httpAddr string
+	grpcAddr string
+)
+
 func main() {
+	// Load configuration
+	config, err := loadConfig("config.yml")
+	if err != nil {
+		log.Printf("Config warning: %v", err)
+	}
+
+	httpAddr = ":" + config.HTTP.Port
+	grpcAddr = ":" + config.GRPC.Port
+
 	ctx, cancel := context.WithCancel(context.Background())
 	defer cancel()
 
-	// 1. Создаем gRPC сервер
+	// 1. Create gRPC server
 	grpcSrv := grpc.NewServer(
 		grpc.ChainUnaryInterceptor(
 			recoveryUnaryInterceptor,
@@ -156,7 +179,7 @@ func main() {
 	)
 	registerGRPCHandlers(grpcSrv)
 
-	// 2. Запускаем gRPC сервер
+	// 2. Start gRPC server
 	lis, err := net.Listen("tcp", grpcAddr)
 	if err != nil {
 		log.Fatalf("failed to listen: %v", err)
@@ -168,28 +191,25 @@ func main() {
 		}
 	}()
 
-	// 3. Создаем HTTP роутер
+	// 3. Create HTTP router
 	httpMux := http.NewServeMux()
-
-	// 4. Добавляем обычные HTTP обработчики
-	httpMux.Handle("/", &httpServer{})
-
-	// 5. Создаем gRPC Gateway роутер
+	
+	// 4. Create gRPC Gateway router
 	gwMux := runtime.NewServeMux()
 	if err := registerHTTPHandlers(ctx, gwMux); err != nil {
 		log.Fatalf("failed to register HTTP handlers: %v", err)
 	}
 
-	// 6. Объединяем роутеры
-	httpMux.Handle("/v1/", gwMux) // Все gRPC HTTP-ручки будут доступны по /v1/
+	// 5. Combine routers
+	httpMux.Handle("/", gwMux)
 
-	// 7. Настраиваем HTTP сервер
+	// 6. Configure HTTP server
 	httpSrv := &http.Server{
 		Addr:    httpAddr,
 		Handler: recoveryMiddleware(loggingMiddleware(httpMux)),
 	}
 
-	// 8. Graceful shutdown
+	// 7. Graceful shutdown
 	go func() {
 		sigChan := make(chan os.Signal, 1)
 		signal.Notify(sigChan, os.Interrupt, syscall.SIGTERM)
@@ -208,7 +228,7 @@ func main() {
 		log.Println("Servers stopped gracefully")
 	}()
 
-	// 9. Запускаем HTTP сервер
+	// 8. Start HTTP server
 	log.Printf("HTTP server listening on %s", httpAddr)
 	if err := httpSrv.ListenAndServe(); err != nil && err != http.ErrServerClosed {
 		log.Fatalf("HTTP server error: %v", err)
