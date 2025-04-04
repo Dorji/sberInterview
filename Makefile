@@ -3,7 +3,7 @@
 # Variables
 APP_NAME := project0
 GO_FILES := $(shell find . -type f -name '*.go')
-BUILD_DIR := build
+BUILD_DIR := cmd/sber_loan
 PROTO_FILES:= api/protos
 BIN := $(BUILD_DIR)/$(APP_NAME)
 
@@ -11,18 +11,26 @@ BIN := $(BUILD_DIR)/$(APP_NAME)
 .PHONY: all
 all: build
 
-# Build the application
+# Build the application container
 .PHONY: build
-build: $(GO_FILES)
-	@echo "Building the application..."
-	@mkdir -p $(BUILD_DIR)
-	@go build -o $(BIN) .
+build: 
+	docker build -t sber-grpc-server .
 
-# Run the application
+# Run the application container
 .PHONY: run
-run: build
-	@echo "Running the application..."
-	@$(BIN)
+run: 
+	docker run -v ./custom-config.yml:/app/config.yml ...
+
+# Stop the application container
+.PHONY: stop
+stop: 
+	docker stop sber-grpc-server
+
+# Delete the application container
+.PHONY: rm
+rm: 
+	docker rm sber-grpc-server
+
 
 # Run tests
 .PHONY: test

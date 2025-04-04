@@ -1,8 +1,11 @@
 # Build stage
-FROM golang:1.21-alpine AS builder
+FROM golang:1.24.1-alpine AS builder
 
 # Set working directory
 WORKDIR /app
+
+# Install dependencies for yaml
+RUN apk add --no-cache git
 
 # Copy go mod and sum files
 COPY go.mod go.sum ./
@@ -10,11 +13,11 @@ COPY go.mod go.sum ./
 # Download all dependencies
 RUN go mod download
 
-# Copy the source code
+# Copy the source code and config
 COPY . .
 
 # Build the application
-RUN CGO_ENABLED=0 GOOS=linux go build -o /app/main ./...
+RUN CGO_ENABLED=0 GOOS=linux go build -o /app/bin/sber_loan ./cmd/sber_loan
 
 # Final stage
 FROM alpine:3.19
@@ -26,14 +29,12 @@ RUN apk --no-cache add ca-certificates
 WORKDIR /app
 
 # Copy the binary from builder
-COPY --from=builder /app/main /app/main
+COPY --from=builder /app/bin/sber_loan /app/sber_loan
+# Copy config file
+COPY --from=builder /app/config.yml /app/config.yml
 
-# Copy static files, templates, or other assets if needed
-# COPY --from=builder /app/static ./static
-# COPY --from=builder /app/templates ./templates
-
-# Expose the port the app runs on
-EXPOSE 8080
+# Expose both ports (можно переопределить через config.yml)
+EXPOSE 8080 50051
 
 # Command to run the application
-CMD ["/app/main"]
+CMD ["/app/sber_loan"]

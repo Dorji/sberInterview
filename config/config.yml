@@ -1,0 +1,4 @@
+http:
+  port: "8080"  # Порт для HTTP-сервера (включая gRPC Gateway)
+grpc:
+  port: "50051" # Порт для gRPC-сервера
