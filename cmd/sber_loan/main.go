@@ -13,8 +13,7 @@ import (
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/reflection"
 
-	// Импортируем сгенерированные пакеты
-	proto "api/protos/services" 
+	"gen/go/protos/services" 
 )
 
 // HTTP сервер
@@ -35,13 +34,13 @@ func (s *httpServer) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 
 // gRPC сервер
 type grpcServer struct {
-	proto.UnimplementedYourServiceServer // замените YourService на ваш реальный сервис
+	services.UnimplementedLoanServiceServer // замените YourService на ваш реальный сервис
 }
 
 // Реализуйте методы gRPC сервера здесь
-func (s *grpcServer) YourMethod(ctx context.Context, req *proto.YourRequest) (*proto.YourResponse, error) {
+func (s *grpcServer) YourMethod(ctx context.Context, req *proto.LoanRequest) (*services.LoanResponse, error) {
 	// Реализация метода
-	return &proto.YourResponse{Result: "Hello, " + req.Name}, nil
+	return &services.LoanResponse{Result: "Hello, " + req.Name}, nil
 }
 
 func main() {
@@ -72,7 +71,7 @@ func main() {
 	}
 
 	grpcSrv := grpc.NewServer()
-	proto.RegisterYourServiceServer(grpcSrv, &grpcServer{}) // замените YourService на ваш сервис
+	services.RegisterLoanServiceServer(grpcSrv, &grpcServer{})
 	reflection.Register(grpcSrv) // для удобства разработки (можно убрать в production)
 
 	// Запуск gRPC сервера

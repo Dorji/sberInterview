@@ -4,6 +4,7 @@
 APP_NAME := project0
 GO_FILES := $(shell find . -type f -name '*.go')
 BUILD_DIR := build
+PROTO_FILES:= api/protos
 BIN := $(BUILD_DIR)/$(APP_NAME)
 
 # Default target
@@ -22,12 +23,6 @@ build: $(GO_FILES)
 run: build
 	@echo "Running the application..."
 	@$(BIN)
-
-# Clean up build artifacts
-.PHONY: clean
-clean:
-	@echo "Cleaning up..."
-	@rm -rf $(BUILD_DIR)
 
 # Run tests
 .PHONY: test
@@ -56,6 +51,7 @@ deps:
  #generate on proto
 .PHONY: proto
 proto:
-	protoc --go_out=. --go_opt=paths=source_relative \
-	       --go-grpc_out=. --go-grpc_opt=paths=source_relative \
-	       proto/*.proto
+	protoc -I. -Ithird_party \
+		--go_out=. --go_opt=paths=source_relative \
+		--go-grpc_out=. --go-grpc_opt=paths=source_relative \
+		$(PROTO_FILES)/**/*.proto
