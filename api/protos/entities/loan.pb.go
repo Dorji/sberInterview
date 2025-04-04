@@ -24,9 +24,9 @@ const (
 
 type LoanRequest struct {
 	state          protoimpl.MessageState `protogen:"open.v1"`
-	ObjectCost     int32                  `protobuf:"varint,1,opt,name=object_cost,json=objectCost,proto3" json:"object_cost,omitempty"`             // стоимость объекта
-	InitialPayment int32                  `protobuf:"varint,2,opt,name=initial_payment,json=initialPayment,proto3" json:"initial_payment,omitempty"` // первоначальный взнос
-	Months         int32                  `protobuf:"varint,3,opt,name=months,proto3" json:"months,omitempty"`                                       // срок
+	ObjectCost     int64                  `protobuf:"varint,1,opt,name=object_cost,json=objectCost,proto3" json:"object_cost,omitempty"`             // стоимость объекта
+	InitialPayment int64                  `protobuf:"varint,2,opt,name=initial_payment,json=initialPayment,proto3" json:"initial_payment,omitempty"` // первоначальный взнос
+	Months         int64                  `protobuf:"varint,3,opt,name=months,proto3" json:"months,omitempty"`                                       // срок
 	Program        *LoanProgram           `protobuf:"bytes,4,opt,name=program,proto3" json:"program,omitempty"`                                      // блок программы кредита
 	unknownFields  protoimpl.UnknownFields
 	sizeCache      protoimpl.SizeCache
@@ -62,21 +62,21 @@ func (*LoanRequest) Descriptor() ([]byte, []int) {
 	return file_api_protos_entities_loan_proto_rawDescGZIP(), []int{0}
 }
 
-func (x *LoanRequest) GetObjectCost() int32 {
+func (x *LoanRequest) GetObjectCost() int64 {
 	if x != nil {
 		return x.ObjectCost
 	}
 	return 0
 }
 
-func (x *LoanRequest) GetInitialPayment() int32 {
+func (x *LoanRequest) GetInitialPayment() int64 {
 	if x != nil {
 		return x.InitialPayment
 	}
 	return 0
 }
 
-func (x *LoanRequest) GetMonths() int32 {
+func (x *LoanRequest) GetMonths() int64 {
 	if x != nil {
 		return x.Months
 	}
@@ -88,67 +88,6 @@ func (x *LoanRequest) GetProgram() *LoanProgram {
 		return x.Program
 	}
 	return nil
-}
-
-// Блок параметров кредита
-type LoanParams struct {
-	state          protoimpl.MessageState `protogen:"open.v1"`
-	ObjectCost     int32                  `protobuf:"varint,1,opt,name=object_cost,json=objectCost,proto3" json:"object_cost,omitempty"`             // стоимость объекта (рубли)
-	InitialPayment int32                  `protobuf:"varint,2,opt,name=initial_payment,json=initialPayment,proto3" json:"initial_payment,omitempty"` // первоначальный взнос
-	Months         int32                  `protobuf:"varint,3,opt,name=months,proto3" json:"months,omitempty"`                                       // срок (месяцы)
-	unknownFields  protoimpl.UnknownFields
-	sizeCache      protoimpl.SizeCache
-}
-
-func (x *LoanParams) Reset() {
-	*x = LoanParams{}
-	mi := &file_api_protos_entities_loan_proto_msgTypes[1]
-	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-	ms.StoreMessageInfo(mi)
-}
-
-func (x *LoanParams) String() string {
-	return protoimpl.X.MessageStringOf(x)
-}
-
-func (*LoanParams) ProtoMessage() {}
-
-func (x *LoanParams) ProtoReflect() protoreflect.Message {
-	mi := &file_api_protos_entities_loan_proto_msgTypes[1]
-	if x != nil {
-		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-		if ms.LoadMessageInfo() == nil {
-			ms.StoreMessageInfo(mi)
-		}
-		return ms
-	}
-	return mi.MessageOf(x)
-}
-
-// Deprecated: Use LoanParams.ProtoReflect.Descriptor instead.
-func (*LoanParams) Descriptor() ([]byte, []int) {
-	return file_api_protos_entities_loan_proto_rawDescGZIP(), []int{1}
-}
-
-func (x *LoanParams) GetObjectCost() int32 {
-	if x != nil {
-		return x.ObjectCost
-	}
-	return 0
-}
-
-func (x *LoanParams) GetInitialPayment() int32 {
-	if x != nil {
-		return x.InitialPayment
-	}
-	return 0
-}
-
-func (x *LoanParams) GetMonths() int32 {
-	if x != nil {
-		return x.Months
-	}
-	return 0
 }
 
 // Блок программы кредита
@@ -163,7 +102,7 @@ type LoanProgram struct {
 
 func (x *LoanProgram) Reset() {
 	*x = LoanProgram{}
-	mi := &file_api_protos_entities_loan_proto_msgTypes[2]
+	mi := &file_api_protos_entities_loan_proto_msgTypes[1]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -175,7 +114,7 @@ func (x *LoanProgram) String() string {
 func (*LoanProgram) ProtoMessage() {}
 
 func (x *LoanProgram) ProtoReflect() protoreflect.Message {
-	mi := &file_api_protos_entities_loan_proto_msgTypes[2]
+	mi := &file_api_protos_entities_loan_proto_msgTypes[1]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -188,7 +127,7 @@ func (x *LoanProgram) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use LoanProgram.ProtoReflect.Descriptor instead.
 func (*LoanProgram) Descriptor() ([]byte, []int) {
-	return file_api_protos_entities_loan_proto_rawDescGZIP(), []int{2}
+	return file_api_protos_entities_loan_proto_rawDescGZIP(), []int{1}
 }
 
 func (x *LoanProgram) GetSalary() bool {
@@ -216,9 +155,9 @@ func (x *LoanProgram) GetBase() bool {
 type LoanAggregates struct {
 	state           protoimpl.MessageState `protogen:"open.v1"`
 	Rate            float64                `protobuf:"fixed64,1,opt,name=rate,proto3" json:"rate,omitempty"`                                              // ставка (% годовых)
-	LoanSum         int32                  `protobuf:"varint,2,opt,name=loan_sum,json=loanSum,proto3" json:"loan_sum,omitempty"`                          // сумма кредита
-	MonthlyPayment  int32                  `protobuf:"varint,3,opt,name=monthly_payment,json=monthlyPayment,proto3" json:"monthly_payment,omitempty"`     // платеж в месяц
-	Overpayment     int32                  `protobuf:"varint,4,opt,name=overpayment,proto3" json:"overpayment,omitempty"`                                 // переплата
+	LoanSum         int64                  `protobuf:"varint,2,opt,name=loan_sum,json=loanSum,proto3" json:"loan_sum,omitempty"`                          // сумма кредита
+	MonthlyPayment  int64                  `protobuf:"varint,3,opt,name=monthly_payment,json=monthlyPayment,proto3" json:"monthly_payment,omitempty"`     // платеж в месяц
+	Overpayment     int64                  `protobuf:"varint,4,opt,name=overpayment,proto3" json:"overpayment,omitempty"`                                 // переплата
 	LastPaymentDate *timestamppb.Timestamp `protobuf:"bytes,5,opt,name=last_payment_date,json=lastPaymentDate,proto3" json:"last_payment_date,omitempty"` // дата последнего платежа
 	unknownFields   protoimpl.UnknownFields
 	sizeCache       protoimpl.SizeCache
@@ -226,7 +165,7 @@ type LoanAggregates struct {
 
 func (x *LoanAggregates) Reset() {
 	*x = LoanAggregates{}
-	mi := &file_api_protos_entities_loan_proto_msgTypes[3]
+	mi := &file_api_protos_entities_loan_proto_msgTypes[2]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -238,7 +177,7 @@ func (x *LoanAggregates) String() string {
 func (*LoanAggregates) ProtoMessage() {}
 
 func (x *LoanAggregates) ProtoReflect() protoreflect.Message {
-	mi := &file_api_protos_entities_loan_proto_msgTypes[3]
+	mi := &file_api_protos_entities_loan_proto_msgTypes[2]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -251,7 +190,7 @@ func (x *LoanAggregates) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use LoanAggregates.ProtoReflect.Descriptor instead.
 func (*LoanAggregates) Descriptor() ([]byte, []int) {
-	return file_api_protos_entities_loan_proto_rawDescGZIP(), []int{3}
+	return file_api_protos_entities_loan_proto_rawDescGZIP(), []int{2}
 }
 
 func (x *LoanAggregates) GetRate() float64 {
@@ -261,21 +200,21 @@ func (x *LoanAggregates) GetRate() float64 {
 	return 0
 }
 
-func (x *LoanAggregates) GetLoanSum() int32 {
+func (x *LoanAggregates) GetLoanSum() int64 {
 	if x != nil {
 		return x.LoanSum
 	}
 	return 0
 }
 
-func (x *LoanAggregates) GetMonthlyPayment() int32 {
+func (x *LoanAggregates) GetMonthlyPayment() int64 {
 	if x != nil {
 		return x.MonthlyPayment
 	}
 	return 0
 }
 
-func (x *LoanAggregates) GetOverpayment() int32 {
+func (x *LoanAggregates) GetOverpayment() int64 {
 	if x != nil {
 		return x.Overpayment
 	}
@@ -301,7 +240,7 @@ type LoanResult struct {
 
 func (x *LoanResult) Reset() {
 	*x = LoanResult{}
-	mi := &file_api_protos_entities_loan_proto_msgTypes[4]
+	mi := &file_api_protos_entities_loan_proto_msgTypes[3]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -313,7 +252,7 @@ func (x *LoanResult) String() string {
 func (*LoanResult) ProtoMessage() {}
 
 func (x *LoanResult) ProtoReflect() protoreflect.Message {
-	mi := &file_api_protos_entities_loan_proto_msgTypes[4]
+	mi := &file_api_protos_entities_loan_proto_msgTypes[3]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -326,7 +265,7 @@ func (x *LoanResult) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use LoanResult.ProtoReflect.Descriptor instead.
 func (*LoanResult) Descriptor() ([]byte, []int) {
-	return file_api_protos_entities_loan_proto_rawDescGZIP(), []int{4}
+	return file_api_protos_entities_loan_proto_rawDescGZIP(), []int{3}
 }
 
 func (x *LoanResult) GetParams() *LoanParams {
@@ -360,7 +299,7 @@ type LoanResponse struct {
 
 func (x *LoanResponse) Reset() {
 	*x = LoanResponse{}
-	mi := &file_api_protos_entities_loan_proto_msgTypes[5]
+	mi := &file_api_protos_entities_loan_proto_msgTypes[4]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -372,7 +311,7 @@ func (x *LoanResponse) String() string {
 func (*LoanResponse) ProtoMessage() {}
 
 func (x *LoanResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_api_protos_entities_loan_proto_msgTypes[5]
+	mi := &file_api_protos_entities_loan_proto_msgTypes[4]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -385,7 +324,7 @@ func (x *LoanResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use LoanResponse.ProtoReflect.Descriptor instead.
 func (*LoanResponse) Descriptor() ([]byte, []int) {
-	return file_api_protos_entities_loan_proto_rawDescGZIP(), []int{5}
+	return file_api_protos_entities_loan_proto_rawDescGZIP(), []int{4}
 }
 
 func (x *LoanResponse) GetResult() *LoanResult {
@@ -404,7 +343,7 @@ type CacheResult struct {
 
 func (x *CacheResult) Reset() {
 	*x = CacheResult{}
-	mi := &file_api_protos_entities_loan_proto_msgTypes[6]
+	mi := &file_api_protos_entities_loan_proto_msgTypes[5]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -416,7 +355,7 @@ func (x *CacheResult) String() string {
 func (*CacheResult) ProtoMessage() {}
 
 func (x *CacheResult) ProtoReflect() protoreflect.Message {
-	mi := &file_api_protos_entities_loan_proto_msgTypes[6]
+	mi := &file_api_protos_entities_loan_proto_msgTypes[5]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -429,7 +368,7 @@ func (x *CacheResult) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use CacheResult.ProtoReflect.Descriptor instead.
 func (*CacheResult) Descriptor() ([]byte, []int) {
-	return file_api_protos_entities_loan_proto_rawDescGZIP(), []int{6}
+	return file_api_protos_entities_loan_proto_rawDescGZIP(), []int{5}
 }
 
 func (x *CacheResult) GetResults() []*LoanResult {
@@ -439,32 +378,87 @@ func (x *CacheResult) GetResults() []*LoanResult {
 	return nil
 }
 
+// Блок параметров кредита
+type LoanParams struct {
+	state          protoimpl.MessageState `protogen:"open.v1"`
+	ObjectCost     int64                  `protobuf:"varint,1,opt,name=object_cost,json=objectCost,proto3" json:"object_cost,omitempty"`             // стоимость объекта (рубли)
+	InitialPayment int64                  `protobuf:"varint,2,opt,name=initial_payment,json=initialPayment,proto3" json:"initial_payment,omitempty"` // первоначальный взнос
+	Months         int64                  `protobuf:"varint,3,opt,name=months,proto3" json:"months,omitempty"`                                       // срок (месяцы)
+	unknownFields  protoimpl.UnknownFields
+	sizeCache      protoimpl.SizeCache
+}
+
+func (x *LoanParams) Reset() {
+	*x = LoanParams{}
+	mi := &file_api_protos_entities_loan_proto_msgTypes[6]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *LoanParams) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*LoanParams) ProtoMessage() {}
+
+func (x *LoanParams) ProtoReflect() protoreflect.Message {
+	mi := &file_api_protos_entities_loan_proto_msgTypes[6]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use LoanParams.ProtoReflect.Descriptor instead.
+func (*LoanParams) Descriptor() ([]byte, []int) {
+	return file_api_protos_entities_loan_proto_rawDescGZIP(), []int{6}
+}
+
+func (x *LoanParams) GetObjectCost() int64 {
+	if x != nil {
+		return x.ObjectCost
+	}
+	return 0
+}
+
+func (x *LoanParams) GetInitialPayment() int64 {
+	if x != nil {
+		return x.InitialPayment
+	}
+	return 0
+}
+
+func (x *LoanParams) GetMonths() int64 {
+	if x != nil {
+		return x.Months
+	}
+	return 0
+}
+
 var File_api_protos_entities_loan_proto protoreflect.FileDescriptor
 
 const file_api_protos_entities_loan_proto_rawDesc = "" +
 	"\n" +
 	"\x1eapi/protos/entities/loan.proto\x12\bentities\x1a\x1fgoogle/protobuf/timestamp.proto\"\xa0\x01\n" +
 	"\vLoanRequest\x12\x1f\n" +
-	"\vobject_cost\x18\x01 \x01(\x05R\n" +
+	"\vobject_cost\x18\x01 \x01(\x03R\n" +
 	"objectCost\x12'\n" +
-	"\x0finitial_payment\x18\x02 \x01(\x05R\x0einitialPayment\x12\x16\n" +
-	"\x06months\x18\x03 \x01(\x05R\x06months\x12/\n" +
-	"\aprogram\x18\x04 \x01(\v2\x15.entities.LoanProgramR\aprogram\"n\n" +
-	"\n" +
-	"LoanParams\x12\x1f\n" +
-	"\vobject_cost\x18\x01 \x01(\x05R\n" +
-	"objectCost\x12'\n" +
-	"\x0finitial_payment\x18\x02 \x01(\x05R\x0einitialPayment\x12\x16\n" +
-	"\x06months\x18\x03 \x01(\x05R\x06months\"U\n" +
+	"\x0finitial_payment\x18\x02 \x01(\x03R\x0einitialPayment\x12\x16\n" +
+	"\x06months\x18\x03 \x01(\x03R\x06months\x12/\n" +
+	"\aprogram\x18\x04 \x01(\v2\x15.entities.LoanProgramR\aprogram\"U\n" +
 	"\vLoanProgram\x12\x16\n" +
 	"\x06salary\x18\x01 \x01(\bR\x06salary\x12\x1a\n" +
 	"\bmilitary\x18\x02 \x01(\bR\bmilitary\x12\x12\n" +
 	"\x04base\x18\x03 \x01(\bR\x04base\"\xd2\x01\n" +
 	"\x0eLoanAggregates\x12\x12\n" +
 	"\x04rate\x18\x01 \x01(\x01R\x04rate\x12\x19\n" +
-	"\bloan_sum\x18\x02 \x01(\x05R\aloanSum\x12'\n" +
-	"\x0fmonthly_payment\x18\x03 \x01(\x05R\x0emonthlyPayment\x12 \n" +
-	"\voverpayment\x18\x04 \x01(\x05R\voverpayment\x12F\n" +
+	"\bloan_sum\x18\x02 \x01(\x03R\aloanSum\x12'\n" +
+	"\x0fmonthly_payment\x18\x03 \x01(\x03R\x0emonthlyPayment\x12 \n" +
+	"\voverpayment\x18\x04 \x01(\x03R\voverpayment\x12F\n" +
 	"\x11last_payment_date\x18\x05 \x01(\v2\x1a.google.protobuf.TimestampR\x0flastPaymentDate\"\xa5\x01\n" +
 	"\n" +
 	"LoanResult\x12,\n" +
@@ -476,7 +470,13 @@ const file_api_protos_entities_loan_proto_rawDesc = "" +
 	"\fLoanResponse\x12,\n" +
 	"\x06result\x18\x01 \x01(\v2\x14.entities.LoanResultR\x06result\"=\n" +
 	"\vCacheResult\x12.\n" +
-	"\aresults\x18\x01 \x03(\v2\x14.entities.LoanResultR\aresultsB4Z2github.com/Dorji/sberInterview/api/protos/entitiesb\x06proto3"
+	"\aresults\x18\x01 \x03(\v2\x14.entities.LoanResultR\aresults\"n\n" +
+	"\n" +
+	"LoanParams\x12\x1f\n" +
+	"\vobject_cost\x18\x01 \x01(\x03R\n" +
+	"objectCost\x12'\n" +
+	"\x0finitial_payment\x18\x02 \x01(\x03R\x0einitialPayment\x12\x16\n" +
+	"\x06months\x18\x03 \x01(\x03R\x06monthsB4Z2github.com/Dorji/sberInterview/api/protos/entitiesb\x06proto3"
 
 var (
 	file_api_protos_entities_loan_proto_rawDescOnce sync.Once
@@ -493,22 +493,22 @@ func file_api_protos_entities_loan_proto_rawDescGZIP() []byte {
 var file_api_protos_entities_loan_proto_msgTypes = make([]protoimpl.MessageInfo, 7)
 var file_api_protos_entities_loan_proto_goTypes = []any{
 	(*LoanRequest)(nil),           // 0: entities.LoanRequest
-	(*LoanParams)(nil),            // 1: entities.LoanParams
-	(*LoanProgram)(nil),           // 2: entities.LoanProgram
-	(*LoanAggregates)(nil),        // 3: entities.LoanAggregates
-	(*LoanResult)(nil),            // 4: entities.LoanResult
-	(*LoanResponse)(nil),          // 5: entities.LoanResponse
-	(*CacheResult)(nil),           // 6: entities.CacheResult
+	(*LoanProgram)(nil),           // 1: entities.LoanProgram
+	(*LoanAggregates)(nil),        // 2: entities.LoanAggregates
+	(*LoanResult)(nil),            // 3: entities.LoanResult
+	(*LoanResponse)(nil),          // 4: entities.LoanResponse
+	(*CacheResult)(nil),           // 5: entities.CacheResult
+	(*LoanParams)(nil),            // 6: entities.LoanParams
 	(*timestamppb.Timestamp)(nil), // 7: google.protobuf.Timestamp
 }
 var file_api_protos_entities_loan_proto_depIdxs = []int32{
-	2, // 0: entities.LoanRequest.program:type_name -> entities.LoanProgram
+	1, // 0: entities.LoanRequest.program:type_name -> entities.LoanProgram
 	7, // 1: entities.LoanAggregates.last_payment_date:type_name -> google.protobuf.Timestamp
-	1, // 2: entities.LoanResult.params:type_name -> entities.LoanParams
-	2, // 3: entities.LoanResult.program:type_name -> entities.LoanProgram
-	3, // 4: entities.LoanResult.aggregates:type_name -> entities.LoanAggregates
-	4, // 5: entities.LoanResponse.result:type_name -> entities.LoanResult
-	4, // 6: entities.CacheResult.results:type_name -> entities.LoanResult
+	6, // 2: entities.LoanResult.params:type_name -> entities.LoanParams
+	1, // 3: entities.LoanResult.program:type_name -> entities.LoanProgram
+	2, // 4: entities.LoanResult.aggregates:type_name -> entities.LoanAggregates
+	3, // 5: entities.LoanResponse.result:type_name -> entities.LoanResult
+	3, // 6: entities.CacheResult.results:type_name -> entities.LoanResult
 	7, // [7:7] is the sub-list for method output_type
 	7, // [7:7] is the sub-list for method input_type
 	7, // [7:7] is the sub-list for extension type_name
