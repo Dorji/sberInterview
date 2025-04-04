@@ -28,7 +28,7 @@ run: build
 .PHONY: test
 test:
 	@echo "Running tests..."
-	@go test ./...
+	@go test -v ./...
 
 # Format code
 .PHONY: fmt
@@ -39,8 +39,8 @@ fmt:
 # Lint code
 .PHONY: lint
 lint:
-	@echo "Linting code..."
-	@golangci-lint run
+	golangci-lint cache clean
+	golangci-lint run --enable=gofmt --fix --config .golangci.yaml
 
 # Install dependencies
 .PHONY: deps
@@ -54,4 +54,7 @@ proto:
 	protoc -I. -Ithird_party \
 		--go_out=. --go_opt=paths=source_relative \
 		--go-grpc_out=. --go-grpc_opt=paths=source_relative \
+		--grpc-gateway_out=. \
+		--grpc-gateway_opt=paths=source_relative \
+		--openapiv2_out=./ \
 		$(PROTO_FILES)/**/*.proto
