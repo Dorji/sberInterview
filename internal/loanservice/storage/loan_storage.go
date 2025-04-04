@@ -19,17 +19,11 @@ func NewLoanCache() *LoanCache {
 }
 
 // Add добавляет новый результат расчета в кеш
-func (c *LoanCache) Add(params *entities.LoanParams, program *entities.LoanProgram, aggregates *entities.LoanAggregates) {
+func (c *LoanCache) Add(entity *entities.LoanResult) {
 	c.mu.Lock()
 	defer c.mu.Unlock()
 
-	result := &entities.LoanResult{
-		Params:     params,
-		Program:    program,
-		Aggregates: aggregates,
-	}
-
-	c.items = append(c.items, result)
+	c.items = append(c.items, entity)
 }
 
 // GetAll возвращает все результаты в виде CacheResult
