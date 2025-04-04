@@ -1,5 +1,0 @@
-package loan
-
-
-
-func Test

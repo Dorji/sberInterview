@@ -9,11 +9,13 @@ import (
 	"os"
 	"os/signal"
 	"syscall"
+	"time"
 
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/reflection"
 
-	"gen/go/protos/services" 
+	"github.com/Dorji/sberInterview/internal/loanservice"
+	"github.com/Dorji/sberInterview/api/protos/services"
 )
 
 // HTTP сервер
@@ -30,17 +32,6 @@ func (s *httpServer) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	default:
 		http.NotFound(w, r)
 	}
-}
-
-// gRPC сервер
-type grpcServer struct {
-	services.UnimplementedLoanServiceServer // замените YourService на ваш реальный сервис
-}
-
-// Реализуйте методы gRPC сервера здесь
-func (s *grpcServer) YourMethod(ctx context.Context, req *proto.LoanRequest) (*services.LoanResponse, error) {
-	// Реализация метода
-	return &services.LoanResponse{Result: "Hello, " + req.Name}, nil
 }
 
 func main() {
@@ -71,7 +62,7 @@ func main() {
 	}
 
 	grpcSrv := grpc.NewServer()
-	services.RegisterLoanServiceServer(grpcSrv, &grpcServer{})
+	services.RegisterLoanServiceServer(grpcSrv, loanservice.NewLoanCalcService())
 	reflection.Register(grpcSrv) // для удобства разработки (можно убрать в production)
 
 	// Запуск gRPC сервера
@@ -93,7 +84,7 @@ func main() {
 	if err := httpSrv.Shutdown(ctx); err != nil {
 		log.Printf("HTTP shutdown error: %v", err)
 	}
-	
+
 	grpcSrv.GracefulStop()
 	log.Println("Server exited properly")
 }
