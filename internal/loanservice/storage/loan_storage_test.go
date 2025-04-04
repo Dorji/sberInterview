@@ -150,7 +150,7 @@ func TestDeepCopy(t *testing.T) {
 			Base: true,
 		},
 		Aggregates: &entities.LoanAggregates{
-			Rate:           7.5,
+			Rate:           8,
 			LoanSum:        800000,
 			MonthlyPayment: 9500,
 			Overpayment:    340000,

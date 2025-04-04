@@ -8,6 +8,7 @@ import (
 
 // подразумевается что они где-то в БД
 const (
+    InitialPayment     =0.20
 	BaseAnnualRate     = 0.10
 	MilitaryAnnualRate = 0.09
 	SalaryAnnualRate   = 0.08

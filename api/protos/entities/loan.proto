@@ -21,7 +21,7 @@ message LoanProgram {
 
 // Блок агрегированных данных
 message LoanAggregates {
-  double rate = 1;                          // ставка (% годовых)
+  int64 rate = 1;                          // ставка (% годовых)
   int64 loan_sum = 2;                       // сумма кредита
   int64 monthly_payment = 3;                // платеж в месяц
   int64 overpayment = 4;                    // переплата

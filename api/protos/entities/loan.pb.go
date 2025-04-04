@@ -154,7 +154,7 @@ func (x *LoanProgram) GetBase() bool {
 // Блок агрегированных данных
 type LoanAggregates struct {
 	state           protoimpl.MessageState `protogen:"open.v1"`
-	Rate            float64                `protobuf:"fixed64,1,opt,name=rate,proto3" json:"rate,omitempty"`                                              // ставка (% годовых)
+	Rate            int64                  `protobuf:"varint,1,opt,name=rate,proto3" json:"rate,omitempty"`                                               // ставка (% годовых)
 	LoanSum         int64                  `protobuf:"varint,2,opt,name=loan_sum,json=loanSum,proto3" json:"loan_sum,omitempty"`                          // сумма кредита
 	MonthlyPayment  int64                  `protobuf:"varint,3,opt,name=monthly_payment,json=monthlyPayment,proto3" json:"monthly_payment,omitempty"`     // платеж в месяц
 	Overpayment     int64                  `protobuf:"varint,4,opt,name=overpayment,proto3" json:"overpayment,omitempty"`                                 // переплата
@@ -193,7 +193,7 @@ func (*LoanAggregates) Descriptor() ([]byte, []int) {
 	return file_api_protos_entities_loan_proto_rawDescGZIP(), []int{2}
 }
 
-func (x *LoanAggregates) GetRate() float64 {
+func (x *LoanAggregates) GetRate() int64 {
 	if x != nil {
 		return x.Rate
 	}
@@ -455,7 +455,7 @@ const file_api_protos_entities_loan_proto_rawDesc = "" +
 	"\bmilitary\x18\x02 \x01(\bR\bmilitary\x12\x12\n" +
 	"\x04base\x18\x03 \x01(\bR\x04base\"\xd2\x01\n" +
 	"\x0eLoanAggregates\x12\x12\n" +
-	"\x04rate\x18\x01 \x01(\x01R\x04rate\x12\x19\n" +
+	"\x04rate\x18\x01 \x01(\x03R\x04rate\x12\x19\n" +
 	"\bloan_sum\x18\x02 \x01(\x03R\aloanSum\x12'\n" +
 	"\x0fmonthly_payment\x18\x03 \x01(\x03R\x0emonthlyPayment\x12 \n" +
 	"\voverpayment\x18\x04 \x01(\x03R\voverpayment\x12F\n" +
