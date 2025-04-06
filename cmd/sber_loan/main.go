@@ -36,8 +36,16 @@ type Config struct {
 
 func loadConfig(path string) (*Config, error) {
 	config := &Config{
-		HTTP: struct{ Port string }{Port: "8080"},
-		GRPC: struct{ Port string }{Port: "50051"},
+		HTTP: struct {
+			Port string `yaml:"port"`
+		}{
+			Port: "8080",
+		},
+		GRPC: struct {
+			Port string `yaml:"port"`
+		}{
+			Port: "50051",
+		},
 	}
 
 	file, err := os.ReadFile(path)
