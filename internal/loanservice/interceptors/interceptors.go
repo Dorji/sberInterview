@@ -52,7 +52,6 @@ func RecoveryMiddleware(next http.Handler) http.Handler {
 				http.Error(w, "Internal Server Error", http.StatusInternalServerError)
 			}
 		}()
-		fmt.Printf("%#v ----- %#v",w,r)
 		next.ServeHTTP(w, r)
 	})
 }
