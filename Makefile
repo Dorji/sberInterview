@@ -19,7 +19,7 @@ build:
 # Run the application container
 .PHONY: run
 run: 
-	docker run -p 8080:8080 -v ./config/config.yml:/app/config/config.yml sber-grpc-server 
+	docker run -p 8080:8080 -d -v ./config/config.yml:/app/config/config.yml sber-grpc-server 
 # Stop the application container
 .PHONY: stop
 stop: 
