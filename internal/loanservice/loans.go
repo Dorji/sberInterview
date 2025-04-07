@@ -5,10 +5,13 @@ import (
 	"fmt"
 	"math"
 
+	"net/http"
+
 	"github.com/Dorji/sberInterview/api/protos/entities"
 	"github.com/Dorji/sberInterview/api/protos/services"
 	db "github.com/Dorji/sberInterview/internal/db/storage"
 	"github.com/Dorji/sberInterview/internal/loanservice/storage"
+	"google.golang.org/grpc/status"
 	"google.golang.org/protobuf/types/known/emptypb"
 	timestamppb "google.golang.org/protobuf/types/known/timestamppb"
 )
@@ -19,15 +22,15 @@ type LoanServiceServer struct {
 	cache *storage.LoanCache
 }
 
-func NewLoanService(cache *storage.LoanCache) (*LoanServiceServer,error) {
-	res:=&LoanServiceServer{cache: cache}
-	return res,nil
+func NewLoanService(cache *storage.LoanCache) (*LoanServiceServer, error) {
+	res := &LoanServiceServer{cache: cache}
+	return res, nil
 }
 
 func (ls *LoanServiceServer) Execute(ctx context.Context, req *entities.LoanRequest) (*entities.LoanResult, error) {
 	// Параметры из примера
-	if float64(req.InitialPayment/req.ObjectCost) < db.InitialPayment {
-		return nil, fmt.Errorf("the initial payment should be more")
+	if float64(req.InitialPayment)/float64(req.ObjectCost) < db.InitialPayment {
+		return nil, status.Errorf(http.StatusBadRequest, "the initial payment should be more")
 	}
 	loanSum := req.ObjectCost - req.InitialPayment // Сумма кредита
 	annualRate, err := db.GetAnnualRate(req.Program)
@@ -64,8 +67,11 @@ func (ls *LoanServiceServer) Execute(ctx context.Context, req *entities.LoanRequ
 }
 
 func (ls *LoanServiceServer) Cache(context.Context, *emptypb.Empty) (*entities.CacheResult, error) {
-
-	return &entities.CacheResult{}, nil
+	all := ls.cache.GetAll()
+	if len(all.Results) == 0 {
+		return nil, status.Errorf(http.StatusBadRequest, "empty cache")
+	}
+	return all, nil
 }
 
 func (ls *LoanServiceServer) calculateMonthlyPayment(loanSum int64, annualRate float64, months int64) (int64, error) {
@@ -76,7 +82,7 @@ func (ls *LoanServiceServer) calculateMonthlyPayment(loanSum int64, annualRate f
 	if months <= 0 {
 		return 0, fmt.Errorf("calculateMonthlyPayment:Zero months")
 	}
-	
+
 	if loanSum == math.MaxInt64 {
 		return 0, fmt.Errorf("calculateMonthlyPayment:loanSum is MaxInt64")
 	}
@@ -87,7 +93,7 @@ func (ls *LoanServiceServer) calculateMonthlyPayment(loanSum int64, annualRate f
 	if annualRate < 0.00 {
 		return 0, fmt.Errorf("calculateMonthlyPayment:rate less than 0.00")
 	}
-	
+
 	if annualRate == 0.00 {
 		return 0, fmt.Errorf("calculateMonthlyPayment:installment plan")
 	}
@@ -109,7 +115,7 @@ func (ls *LoanServiceServer) calculateMonthlyPayment(loanSum int64, annualRate f
 
 func (ls *LoanServiceServer) RoundNotNegative(num float64) (int64, error) {
 
-	if num < 0{
+	if num < 0 {
 		return 0, fmt.Errorf("LoanServiceServer: num is negative")
 	}
 
@@ -130,7 +136,7 @@ func (ls *LoanServiceServer) RoundNotNegative(num float64) (int64, error) {
 	}
 
 	// Проверка на переполнение int64
-	if num >=float64(math.MaxInt64) {
+	if num >= float64(math.MaxInt64) {
 		return 0, fmt.Errorf("LoanServiceServer:round num overflow")
 	}
 

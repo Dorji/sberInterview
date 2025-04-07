@@ -34,9 +34,7 @@ func LoggingMiddleware(next http.Handler) http.Handler {
 
 		duration := time.Since(start).Nanoseconds()
 		log.Printf(
-			"%s %s status_code: %d, duration: %d ns",
-			r.Method,
-			r.URL.Path,
+			"status_code: %d, duration: %d ns",
 			recorder.statusCode,
 			duration,
 		)
@@ -64,8 +62,7 @@ func LoggingUnaryInterceptor(ctx context.Context, req interface{}, info *grpc.Un
 	statusCode := status.Code(err)
 	duration := time.Since(start).Nanoseconds()
 	log.Printf(
-		"%s status_code: %d, duration: %d ns",
-		info.FullMethod,
+		"status_code: %d, duration: %d ns",
 		statusCode,
 		duration,
 	)

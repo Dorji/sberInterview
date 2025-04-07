@@ -35,37 +35,37 @@ func TestGetAnnualRate(t *testing.T) {
 			name:    "No program selected",
 			program: &entities.LoanProgram{Base: false, Military: false, Salary: false},
 			wantErr: true,
-			errMsg:  "choose program",
+			errMsg:  "rpc error: code = Code(400) desc = choose program",
 		},
 		{
 			name:    "Base and Military selected",
 			program: &entities.LoanProgram{Base: true, Military: true, Salary: false},
 			wantErr: true,
-			errMsg:  "choose only 1 program",
+			errMsg:  "rpc error: code = Code(400) desc = choose only 1 program",
 		},
 		{
 			name:    "Base and Salary selected",
 			program: &entities.LoanProgram{Base: true, Military: false, Salary: true},
 			wantErr: true,
-			errMsg:  "choose only 1 program",
+			errMsg:  "rpc error: code = Code(400) desc = choose only 1 program",
 		},
 		{
 			name:    "Military and Salary selected",
 			program: &entities.LoanProgram{Base: false, Military: true, Salary: true},
 			wantErr: true,
-			errMsg:  "choose only 1 program",
+			errMsg:  "rpc error: code = Code(400) desc = choose only 1 program",
 		},
 		{
 			name:    "All programs selected",
 			program: &entities.LoanProgram{Base: true, Military: true, Salary: true},
 			wantErr: true,
-			errMsg:  "choose only 1 program",
+			errMsg:  "rpc error: code = Code(400) desc = choose only 1 program",
 		},
 		{
 			name:    "NIL statement",
 			program: nil,
 			wantErr: true,
-			errMsg:  "choose program",
+			errMsg:  "rpc error: code = Code(400) desc = choose program",
 		},
 	}
 
