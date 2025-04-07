@@ -244,3 +244,113 @@ func TestRoundNotNegative(t *testing.T) {
 		})
 	}
 }
+
+package loanservice_test
+
+import (
+	"context"
+	"testing"
+
+	"github.com/Dorji/sberInterview/api/protos/entities"
+	"github.com/Dorji/sberInterview/api/protos/services"
+	"github.com/Dorji/sberInterview/internal/loanservice"
+	"github.com/Dorji/sberInterview/internal/loanservice/storage"
+	"github.com/stretchr/testify/assert"
+	"google.golang.org/grpc/codes"
+	"google.golang.org/grpc/status"
+	"google.golang.org/protobuf/types/known/emptypb"
+)
+
+func TestLoanService_Execute(t *testing.T) {
+	tests := []struct {
+		name        string
+		request     *entities.LoanRequest
+		wantErr     bool
+		expectedErr codes.Code
+	}{
+		{
+			name: "Valid request",
+			request: &entities.LoanRequest{
+				ObjectCost:     1_000_000,
+				InitialPayment: 200_000,
+				Months:        12,
+				Program:       "standard",
+			},
+			wantErr: false,
+		},
+		{
+			name: "Initial payment too low",
+			request: &entities.LoanRequest{
+				ObjectCost:     1_000_000,
+				InitialPayment: 50_000, // Меньше минимального
+				Months:        12,
+				Program:       "standard",
+			},
+			wantErr:     true,
+			expectedErr: codes.InvalidArgument,
+		},
+		{
+			name: "Invalid program",
+			request: &entities.LoanRequest{
+				ObjectCost:     1_000_000,
+				InitialPayment: 200_000,
+				Months:        12,
+				Program:       "invalid_program",
+			},
+			wantErr:     true,
+			expectedErr: codes.Internal,
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			service, err := loanservice.NewLoanService(storage.NewLoanCache())
+			assert.NoError(t, err)
+
+			resp, err := service.Execute(context.Background(), tt.request)
+
+			if tt.wantErr {
+				assert.Error(t, err)
+				if st, ok := status.FromError(err); ok {
+					assert.Equal(t, tt.expectedErr, st.Code())
+				}
+			} else {
+				assert.NoError(t, err)
+				assert.NotNil(t, resp)
+				assert.Equal(t, tt.request.Program, resp.Program)
+				assert.Equal(t, tt.request.ObjectCost, resp.Params.ObjectCost)
+				assert.True(t, resp.Aggregates.MonthlyPayment > 0)
+			}
+		})
+	}
+}
+
+func TestLoanService_Cache(t *testing.T) {
+	t.Run("Empty cache", func(t *testing.T) {
+		service, err := loanservice.NewLoanService(storage.NewLoanCache())
+		assert.NoError(t, err)
+
+		_, err = service.Cache(context.Background(), &emptypb.Empty{})
+		assert.Error(t, err)
+		assert.Equal(t, codes.InvalidArgument, status.Code(err))
+	})
+
+	t.Run("With items in cache", func(t *testing.T) {
+		cache := storage.NewLoanCache()
+		service, err := loanservice.NewLoanService(cache)
+		assert.NoError(t, err)
+
+		// Добавляем тестовые данные
+		_, err = service.Execute(context.Background(), &entities.LoanRequest{
+			ObjectCost:     1_000_000,
+			InitialPayment: 200_000,
+			Months:        12,
+			Program:       "standard",
+		})
+		assert.NoError(t, err)
+
+		resp, err := service.Cache(context.Background(), &emptypb.Empty{})
+		assert.NoError(t, err)
+		assert.Len(t, resp.Results, 1)
+	})
+}

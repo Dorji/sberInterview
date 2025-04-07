@@ -4,6 +4,8 @@ FROM golang:1.24.1-alpine AS builder
 # Set working directory
 WORKDIR /app
 
+RUN mkdir config
+
 # Install dependencies for yaml
 RUN apk add --no-cache git
 
@@ -31,7 +33,7 @@ WORKDIR /app
 # Copy the binary from builder
 COPY --from=builder /app/bin/sber_loan /app/sber_loan
 # Copy config file
-COPY --from=builder /app/config.yml /app/config.yml
+COPY --from=builder /app/config/config.yml /app/config/config.yml
 
 # Expose both ports (можно переопределить через config.yml)
 EXPOSE 8080 50051
